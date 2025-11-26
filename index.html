@@ -1,88 +1,66 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>Fuchsgeier – Job-Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="login" class="login-screen">
-    <div class="login-card">
-      <h1>Fuchsgeier</h1>
-      <p>Nur für dich</p>
-      <form id="pwForm">
-        <label for="pwInput">Passwort</label>
-        <input id="pwInput" type="password" autocomplete="current-password" placeholder="Geheimwort eingeben">
-        <button type="submit">Rein da</button>
-        <div id="pwError" class="login-error" aria-live="polite"></div>
-      </form>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">FG</div>
+      <div class="title">
+        <h1>Fuchsgeier</h1>
+        <div class="subtitle">Job-Tracker • Merken • Bewerben</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="themeToggle" class="icon-btn" title="Toggle theme">🌗</button>
+      <div class="last-up" id="lastUpdated">—</div>
     </div>
   </div>
 
-  <div id="app" class="page hidden">
-    <header class="header">
-      <div class="brand">
-        <div class="brand-logo">FG</div>
-        <div class="brand-text">
-          <h1>Fuchsgeier</h1>
-          <p>Dein kleines Job-Dashboard</p>
-        </div>
-      </div>
-      <div class="header-meta">
-        <div class="pill pill-soft" id="lastUpdated">Lade Daten…</div>
-      </div>
-    </header>
-
-    <main class="main">
-      <section class="panel">
+  <main class="layout">
+    <aside class="panel left">
+      <div class="panel-section">
         <h2>Filter</h2>
-        <div class="filters">
-          <div class="filter-group">
-            <label for="searchInput">Suchen im Titel/Link</label>
-            <input id="searchInput" type="text" placeholder="z.B. Buchwissenschaft, Lektorat" autocomplete="off">
-          </div>
+        <input id="searchInput" type="search" placeholder="Suche Titel oder Link" />
+        <select id="prioritySelect">
+          <option value="all">Alle Prioritäten</option>
+          <option value="2">Nur hohe</option>
+          <option value="1">Nur normale</option>
+        </select>
+      </div>
 
-          <div class="filter-group">
-            <label for="prioritySelect">Priorität</label>
-            <select id="prioritySelect">
-              <option value="all">Alle Treffer</option>
-              <option value="2">Nur hohe Priorität</option>
-              <option value="1">Nur normale Priorität</option>
-            </select>
-          </div>
-        </div>
+      <div class="panel-section">
+        <h2>To-Do</h2>
+        <div id="todoList" class="list empty">Noch nichts gemerkt</div>
+      </div>
 
-        <div class="keywords-box">
-          <div class="keywords-title">
-            <span>Aktive Stichwörter</span>
-          </div>
-          <div id="keywords" class="keywords-list">
-            <span class="pill pill-ghost">Lade Stichwörter…</span>
-          </div>
-        </div>
-      </section>
+      <div class="panel-section">
+        <h2>Erledigt</h2>
+        <div id="doneList" class="list empty">Noch nichts erledigt</div>
+      </div>
 
-      <section class="panel jobs-panel">
-        <div class="jobs-header">
-          <h2>Treffer</h2>
-          <div class="jobs-count" id="jobsCount">0 Treffer</div>
-        </div>
-        <div id="jobsContainer" class="jobs-list">
-          <div class="empty-state">
-            <h3>Noch keine Daten</h3>
-            <p>Wenn der Fuchsgeier das nächste Mal läuft, tauchen hier Treffer auf.</p>
-          </div>
-        </div>
-      </section>
-    </main>
+      <div class="panel-section">
+        <h2>Uninteressant</h2>
+        <div id="skipList" class="list empty">Keine Einträge</div>
+      </div>
+    </aside>
 
-    <footer class="footer">
-      <span>Fuchsgeier</span>
-      <span class="dot">•</span>
-      <span>läuft im Hintergrund auf deinem Pi</span>
-    </footer>
-  </div>
+    <section class="panel main">
+      <div class="jobs-header">
+        <h2>Treffer</h2>
+        <div id="jobsCount">0</div>
+      </div>
+      <div id="jobsContainer" class="jobs-grid">
+        <div class="empty-state">Noch keine Treffer. Warte auf den nächsten Scan.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">Fuchsgeier — läuft lokal auf deinem Pi</footer>
 
   <script src="script.js"></script>
 </body>
