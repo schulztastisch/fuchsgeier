@@ -6,8 +6,8 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timezone
 from urllib.parse import urlparse, unquote
 
-CONFIG_PATH = "/home/admin/fuchsgeier/config.json"
-JOBS_PATH = "/home/admin/fuchsgeier/jobs.json"
+CONFIG_PATH = "../config.json"
+JOBS_PATH = "../jobs.json"
 LOG_PATH = "/home/admin/fuchsgeier/logs/no_results.log"
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"
 REQUEST_TIMEOUT = 10
@@ -35,7 +35,8 @@ def log_no_result(term):
 
 def fetch_html(url):
     try:
-        resp = requests.get(url, headers={"User-Agent": UA}, timeout=REQUEST_TIMEOUT)
+        resp = requests.get(url, headers={"User-Agent": UA})
+        print(f"check: {url}\n Got response: {resp.status_code} {resp}")
         if resp.status_code == 200:
             return resp.text, resp.url
         return None, None
@@ -89,7 +90,8 @@ def parse_job_from_html(html, url):
     company = (company or "").strip()
     if not title:
         parsed = urlparse(url)
-        title = parsed.path.strip("/").replace("-", " ").replace("_", " ")[:120] or url
+        title = parsed.path.strip(
+            "/").replace("-", " ").replace("_", " ")[:120] or url
     return {"title": title, "snippet": desc, "company": company}
 
 
@@ -113,116 +115,68 @@ def is_valid_job_title(title):
     return True
 
 
-def generate_mock_jobs(keyword, cfg):
-    """Generate realistic mock jobs for development/testing"""
-    max_follow = cfg.get("max_follow_per_term", DEFAULT_MAX_FOLLOW_PER_TERM)
-    results = []
-    
-    # Mock job templates based on keyword
-    mock_templates = {
-        "buchwissenschaft": [
-            ("Lektorin Buchwissenschaft (m/w/d)", "Bundesverband Autor/innnen", "Wir suchen eine erfahrene Lektorin mit Fokus auf Buchwissenschaft und literarisches Lektorat..."),
-            ("Wissenschaftliche Mitarbeiterin Buchwissenschaft", "Universität Hamburg", "Die Universität Hamburg sucht zum nächsten Wintersemester eine wissenschaftliche Mitarbeiterin..."),
-            ("Content Manager Publishing (Buchwissenschaft)", "Suhrkamp Verlag", "Für unser Publishing-Team suchen wir einen Content Manager mit Background in Buchwissenschaft..."),
-        ],
-        "lektorat": [
-            ("Freie Lektorin (m/w/d) gesucht", "Unabhängiger Verlag München", "Suche zuverlässige Lektorin für verschiedene Projekte im Belletristik- und Sachbuchbereich..."),
-            ("Lektorat Vollzeit (m/w/d)", "Fischer Verlag", "Der S. Fischer Verlag sucht eine/n erfahrene/n Lektor/in für unsere Belletristik-Linie..."),
-            ("Lektorat & Redaktion", "Heyne Verlag", "Wir suchen Verstärkung im Bereich Lektorat mit Schwerpunkt auf Genre-Literatur..."),
-        ],
-        "verlag": [
-            ("Verlagsleitung (m/w/d)", "Independ. Verlag Stuttgart", "Wir suchen zum nächstmöglichen Zeitpunkt eine erfahrene Verlagsleitung..."),
-            ("Verlags-Marketing Manager", "Random House", "Join our dynamic publishing team as Marketing Manager..."),
-            ("Produktmanagement Verlag", "Droemer Knaur", "Für unser Produktmanagement suchen wir einen erfahrenen Manager..."),
-        ],
-        "bibliothek": [
-            ("Bibliothekarin (m/w/d)", "Stadtbibliothek Berlin", "Wir suchen eine Bibliothekarin mit Erfahrung in Medienbestandsverwaltung..."),
-            ("Leitung Bereichsbibliothek", "Universitätsbibliothek München", "Die UB München sucht zum 01.01.2026 eine Leiterin für eine Bereichsbibliothek..."),
-            ("Bibliotheksassistentin (m/w/d)", "Württemberg-Bibliothek", "Für unser Team suchen wir eine Bibliotheksassistentin mit Organisationstalent..."),
-        ],
-        "kulturwissenschaft": [
-            ("Kulturwissenschaftlerin im Projekt", "Goethe-Institut", "Das Goethe-Institut sucht eine Kulturwissenschaftlerin für internationales Projekmanagement..."),
-            ("Kultur-Manager (m/w/d)", "Kunsthalle Hamburg", "Verstärke unser Team als Kultur-Manager mit Fokus auf Vermittlung..."),
-        ],
-    }
-    
-    # Get templates for this keyword or use generic ones
-    templates = mock_templates.get(keyword.lower(), [])
-    if not templates:
-        # Fallback: generic template
-        templates = [
-            (f"Position in {keyword}", "Unbekanntes Unternehmen", f"Suche nach Fachkraft im Bereich {keyword}..."),
-        ]
-    
-    # Create results from templates
-    for i, (title, company, desc) in enumerate(templates[:max_follow]):
-        results.append({
-            "title": title,
-            "url": f"https://example-jobs.de/job-{keyword.lower()}-{i}",
-            "snippet": desc[:200],
-            "company": company,
-            "source": "Mock (Development)",
-            "fetched_at": datetime.now(timezone.utc).isoformat()
-        })
-        print(f"    [+] {title[:60]}")
-    
-    return results
-
-
 def search_jobs_from_portals(keyword, cfg):
     """Scrape job portals - fallback to Wikipedia if needed"""
     max_follow = cfg.get("max_follow_per_term", DEFAULT_MAX_FOLLOW_PER_TERM)
     sleep_between = cfg.get("sleep_between_fetch", DEFAULT_SLEEP_BETWEEN_FETCH)
     results = []
-    
+
     # German job portals
     portals = [
-        ("Stellenanzeigen.de", f"https://www.stellenanzeigen.de/search?query={keyword.replace(' ', '+')}&searchtype=1"),
-        ("JobMarkt", f"https://www.jobmarkt.de/stellenangebot?search={keyword.replace(' ', '+')}&location="),
-        ("StepStone", f"https://www.stepstone.de/en/jobs--{keyword.replace(' ', '-')}"),
+        ("Stellenanzeigen.de", f"https://www.stellenanzeigen.de/suche/?fulltext={keyword.replace(' ', '+')}"),
+        ("StepStone", f"https://www.stepstone.de/jobs/{keyword.replace(' ', '-')}?searchOrigin=Homepage_top-search"),
     ]
-    
+
     for portal_name, portal_url in portals:
-        if len(results) >= max_follow:
-            break
+        # if len(results) >= max_follow:
+        #    break
         print(f"  [Scraping] {portal_name}...")
         time.sleep(sleep_between)
         try:
-            resp = requests.get(portal_url, headers={"User-Agent": UA}, timeout=REQUEST_TIMEOUT)
+            resp = requests.get(portal_url, headers={"User-Agent": UA})
+            print(
+                f"check: {portal_url}\n Got response: {resp.status_code} {resp}")
             if resp.status_code != 200:
                 print(f"    [Status] {resp.status_code}")
                 continue
-            
+
             soup = BeautifulSoup(resp.text, "html.parser")
             job_links = []
-            
+
             # Look for job listing links
             for a in soup.find_all("a", href=True):
                 href = a.get("href", "").strip()
+                print(f"Found link {href}")
                 if any(k in href.lower() for k in ("job", "stellen", "position", "angebot", "career")):
-                    if href.startswith("http"):
+                    if href.startswith("https") and portal_name in href:
                         job_links.append(href)
                     elif href.startswith("/") and portal_name:
                         # Make relative links absolute
                         parsed = urlparse(portal_url)
-                        job_links.append(f"{parsed.scheme}://{parsed.netloc}{href}")
-            
+                        print(
+                            f"checking: {parsed.scheme}://{parsed.netloc}{href}")
+                        job_links.append(
+                            f"{parsed.scheme}://{parsed.netloc}{href}")
+
             print(f"    [Found] {len(job_links)} job links")
-            
-            for job_url in job_links[:max_follow - len(results)]:
+
+            for job_url in job_links:
                 time.sleep(sleep_between)
                 html, final_url = fetch_html(job_url)
+                print(f"checking job {job_url}")
                 if not html:
+                    print("No HTML")
                     continue
-                
+
                 parsed_job = parse_job_from_html(html, final_url or job_url)
                 if not is_valid_job_title(parsed_job.get("title")):
+                    print("Not valid job title")
                     continue
-                
+
                 snippet = (parsed_job.get("snippet") or "").strip()
                 if snippet and len(snippet) < 15:
                     snippet = ""
-                
+                print(f"appending job: {parsed_job.get("title").strip()}")
                 results.append({
                     "title": parsed_job.get("title").strip(),
                     "url": final_url or job_url,
@@ -232,16 +186,16 @@ def search_jobs_from_portals(keyword, cfg):
                     "fetched_at": datetime.now(timezone.utc).isoformat()
                 })
                 print(f"    [+] {parsed_job.get('title')[:50]}")
-        
+
         except Exception as e:
             print(f"    [Error] {str(e)[:50]}")
             continue
-    
+
     # Fallback to mock data if no results from portals
     if not results:
         print(f"  [Fallback] Using mock data...")
-        results = generate_mock_jobs(keyword, cfg)
-    
+        # results = generate_mock_jobs(keyword, cfg)
+    print(f"Found {len(results)} results")
     return results
 
 
@@ -250,51 +204,53 @@ def main():
     search_terms = cfg.get("search_terms", [])
     blacklist = [b.lower() for b in cfg.get("blacklist_terms", [])]
     whitelist = [w.lower() for w in cfg.get("whitelist_terms", [])]
-    
+
     all_jobs = []
     print(f"Starting Fuchsgeier with terms: {search_terms}\n")
-    
+
     for term in search_terms:
         print(f"Processing: '{term}'")
         items = search_jobs_from_portals(term, cfg)
-        
+
         if not items:
             log_no_result(term)
             print(f"  ✗ No results\n")
             continue
-        
+
         print(f"  Got {len(items)} items")
         for it in items:
-            txt = (it.get("title", "") + " " + it.get("snippet", "") + " " + it.get("url", "")).lower()
+            txt = (it.get("title", "") + " " + it.get("snippet", "") +
+                   " " + it.get("url", "")).lower()
             if any(b in txt for b in blacklist):
                 continue
             it["priority"] = 2 if any(w in txt for w in whitelist) else 1
             all_jobs.append(it)
         print()
-    
+
     # Deduplication
     seen_urls = set()
     seen_titles = set()
     dedup = []
-    
+
     for j in all_jobs:
         url = j.get("url", "").strip()
         title = j.get("title", "").strip().lower()
         if not url or not title:
             continue
-        
+
         url_norm = url.rstrip("/")
         if url_norm in seen_urls:
             continue
         if len(title) > 10 and title in seen_titles:
             continue
-        
+
         seen_urls.add(url_norm)
         seen_titles.add(title)
         dedup.append(j)
-    
+
     # Sort by priority and recency
-    dedup.sort(key=lambda x: (-x.get("priority", 1), x.get("fetched_at", "")), reverse=True)
+    dedup.sort(key=lambda x: (-x.get("priority", 1),
+               x.get("fetched_at", "")), reverse=True)
     save_jobs(dedup)
     print(f"✓ Fuchsgeier hat {len(dedup)} Treffer gefunden!")
 
