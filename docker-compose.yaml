@@ -1,0 +1,6 @@
+services:
+  fuchsgeier:
+    image: fuchsgeier:latest
+    build: .
+    ports:
+      - 8080:80
