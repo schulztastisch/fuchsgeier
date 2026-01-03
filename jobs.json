@@ -6,7 +6,7 @@
       "snippet": "Für unser Team suchen wir eine Bibliotheksassistentin mit Organisationstalent...",
       "company": "Württemberg-Bibliothek",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:23.763788+00:00",
+      "fetched_at": "2026-01-03T05:00:24.763645+00:00",
       "priority": 1
     },
     {
@@ -15,7 +15,7 @@
       "snippet": "Die UB München sucht zum 01.01.2026 eine Leiterin für eine Bereichsbibliothek...",
       "company": "Universitätsbibliothek München",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:23.763606+00:00",
+      "fetched_at": "2026-01-03T05:00:24.763469+00:00",
       "priority": 1
     },
     {
@@ -24,7 +24,7 @@
       "snippet": "Wir suchen eine Bibliothekarin mit Erfahrung in Medienbestandsverwaltung...",
       "company": "Stadtbibliothek Berlin",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:23.763361+00:00",
+      "fetched_at": "2026-01-03T05:00:24.763230+00:00",
       "priority": 1
     },
     {
@@ -33,7 +33,7 @@
       "snippet": "Für unser Produktmanagement suchen wir einen erfahrenen Manager...",
       "company": "Droemer Knaur",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:20.171596+00:00",
+      "fetched_at": "2026-01-03T05:00:21.301189+00:00",
       "priority": 1
     },
     {
@@ -42,7 +42,7 @@
       "snippet": "Join our dynamic publishing team as Marketing Manager...",
       "company": "Random House",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:20.171423+00:00",
+      "fetched_at": "2026-01-03T05:00:21.301016+00:00",
       "priority": 1
     },
     {
@@ -51,7 +51,7 @@
       "snippet": "Wir suchen zum nächstmöglichen Zeitpunkt eine erfahrene Verlagsleitung...",
       "company": "Independ. Verlag Stuttgart",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:20.171180+00:00",
+      "fetched_at": "2026-01-03T05:00:21.300774+00:00",
       "priority": 1
     },
     {
@@ -60,7 +60,7 @@
       "snippet": "Wir suchen Verstärkung im Bereich Lektorat mit Schwerpunkt auf Genre-Literatur...",
       "company": "Heyne Verlag",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:16.716485+00:00",
+      "fetched_at": "2026-01-03T05:00:17.778417+00:00",
       "priority": 1
     },
     {
@@ -69,7 +69,7 @@
       "snippet": "Der S. Fischer Verlag sucht eine/n erfahrene/n Lektor/in für unsere Belletristik-Linie...",
       "company": "Fischer Verlag",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:16.716305+00:00",
+      "fetched_at": "2026-01-03T05:00:17.778236+00:00",
       "priority": 1
     },
     {
@@ -78,7 +78,7 @@
       "snippet": "Suche zuverlässige Lektorin für verschiedene Projekte im Belletristik- und Sachbuchbereich...",
       "company": "Unabhängiger Verlag München",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:16.716054+00:00",
+      "fetched_at": "2026-01-03T05:00:17.777991+00:00",
       "priority": 1
     },
     {
@@ -87,7 +87,7 @@
       "snippet": "Für unser Publishing-Team suchen wir einen Content Manager mit Background in Buchwissenschaft...",
       "company": "Suhrkamp Verlag",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:13.232152+00:00",
+      "fetched_at": "2026-01-03T05:00:14.044961+00:00",
       "priority": 1
     },
     {
@@ -96,7 +96,7 @@
       "snippet": "Die Universität Hamburg sucht zum nächsten Wintersemester eine wissenschaftliche Mitarbeiterin...",
       "company": "Universität Hamburg",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:13.231959+00:00",
+      "fetched_at": "2026-01-03T05:00:14.035940+00:00",
       "priority": 1
     },
     {
@@ -105,7 +105,7 @@
       "snippet": "Wir suchen eine erfahrene Lektorin mit Fokus auf Buchwissenschaft und literarisches Lektorat...",
       "company": "Bundesverband Autor/innnen",
       "source": "Mock (Development)",
-      "fetched_at": "2026-01-03T03:00:13.231653+00:00",
+      "fetched_at": "2026-01-03T05:00:14.035631+00:00",
       "priority": 1
     }
   ]
