@@ -3,7 +3,10 @@
     "buchwissenschaft",
     "lektorat",
     "verlag",
-    "bibliothek"
+    "bibliothek",
+    "medien",
+    "redaktion",
+    "typografie"
   ],
   "blacklist_terms": [
     "praktikum",
@@ -13,5 +16,9 @@
     "festanstellung",
     "remote",
     "homeoffice"
-  ]
+  ],
+  "location": {
+    "zipcode": "90443",
+    "radius" : "50"
+  }
 }

@@ -6,13 +6,13 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timezone
 from urllib.parse import urlparse, unquote
 
-CONFIG_PATH = "../config.json"
-JOBS_PATH = "../jobs.json"
+CONFIG_PATH = "./config.json"
+JOBS_PATH = "./jobs.json"
 LOG_PATH = "/home/admin/fuchsgeier/logs/no_results.log"
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"
 REQUEST_TIMEOUT = 10
 DEFAULT_MAX_FOLLOW_PER_TERM = 5
-DEFAULT_SLEEP_BETWEEN_FETCH = 0.8
+DEFAULT_SLEEP_BETWEEN_FETCH = 0.5
 
 
 def load_config():
@@ -100,12 +100,12 @@ def is_valid_job_title(title):
     if not title:
         return False
     t = title.lower().strip()
-    bad_titles = (
+    bad_titles = [
         "anmelden", "sign in", "login", "weitere optionen", "servicelogin",
         "datenschutz", "impressum", "kontakt", "sitemap", "about",
         "startseite", "home", "back", "error", "404", "403",
-        "google suche", "search results", "suchergebnisse"
-    )
+        "google suche", "search results", "suchergebnisse", "stellenangebote", "jobs"
+    ]
     if any(b in t for b in bad_titles):
         return False
     if len(t) < 4 or len(t) > 500:
@@ -113,6 +113,19 @@ def is_valid_job_title(title):
     if not any(c.isalnum() for c in t):
         return False
     return True
+
+
+def searchterms_in_job(title, config):
+    if not title:
+        return False
+    t = title.lower().strip()
+    if config["location"].get("zipcode") in t:
+        return False
+    if "stellenangebote" in t:
+        return False
+    if any(b in t for b in config.get("search_terms")):
+        return True
+    return False
 
 
 def search_jobs_from_portals(keyword, cfg):
@@ -123,8 +136,12 @@ def search_jobs_from_portals(keyword, cfg):
 
     # German job portals
     portals = [
-        ("Stellenanzeigen.de", f"https://www.stellenanzeigen.de/suche/?fulltext={keyword.replace(' ', '+')}"),
-        ("StepStone", f"https://www.stepstone.de/jobs/{keyword.replace(' ', '-')}?searchOrigin=Homepage_top-search"),
+        ("Stellenanzeigen.de",
+         f"https://www.stellenanzeigen.de/suche/?fulltext={keyword.replace(' ', '+')}&locationIds=P-DE-DE-2284&perimeterRadius={cfg["location"].get("radius")}"),
+        ("StepStone",
+         f"https://www.stepstone.de/jobs/{keyword.replace(' ', '-')}/in-{cfg["location"].get("zipcode")}?radius={cfg["location"].get("radius")}&searchOrigin=Homepage_top-search"),
+        ("Jobs-In-Nürnberg",
+        f"https://www.jobs-in-nuernberg.de/suche.html?q={keyword.replace(' ', '-')}&c={cfg["location"].get("zipcode")}&r={cfg["location"].get("radius")}&s=V&t=1")
     ]
 
     for portal_name, portal_url in portals:
@@ -148,7 +165,7 @@ def search_jobs_from_portals(keyword, cfg):
                 href = a.get("href", "").strip()
                 print(f"Found link {href}")
                 if any(k in href.lower() for k in ("job", "stellen", "position", "angebot", "career")):
-                    if href.startswith("https") and portal_name in href:
+                    if href.startswith("https"): # and portal_name in href:
                         job_links.append(href)
                     elif href.startswith("/") and portal_name:
                         # Make relative links absolute
@@ -169,10 +186,11 @@ def search_jobs_from_portals(keyword, cfg):
                     continue
 
                 parsed_job = parse_job_from_html(html, final_url or job_url)
-                if not is_valid_job_title(parsed_job.get("title")):
-                    print("Not valid job title")
+                #if not is_valid_job_title(parsed_job.get("title")):
+                #    print("Not valid job title")
+                #    continue
+                if not searchterms_in_job(parsed_job.get("title"), cfg):
                     continue
-
                 snippet = (parsed_job.get("snippet") or "").strip()
                 if snippet and len(snippet) < 15:
                     snippet = ""
